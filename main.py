@@ -31,8 +31,15 @@ def pos_tagging(R, S, T, E):
             else:
                 #the probability of the sequence of words in S given the roles in R is 0
                 prob[word][role] = 0
-
     print(prob)
+    #divide the prob dictionary into classes based on the probability of the sequence of words in S given the roles in R
+    #for each word in S
+    for word in words:
+        #create a dictionary that will contain the roles that maximize the probability of the sequence of words in S given the roles in R
+        max_prob[word] = {}
+        #create a dictionary that will contain the roles that maximize the probability of the sequence of words in S given the roles in R
+        max_prob[word] = max(prob[word], key=prob[word].get)
+    print(max_prob)
 
 
 #call the function pos_tagging with the following parameters
