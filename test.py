@@ -1,5 +1,5 @@
 from time import time
-from pos_tagging import pos_tagging
+from pos_tagging import pos_tag
 from DeviceSelection import DeviceSelection
 
 
@@ -19,7 +19,7 @@ E['Jane']={'Noun': 1, 'Modal': 0, 'Verb': 0}
 out={'Will': 'Modal', 'Mary': 'Noun', 'Spot': 'Verb', 'Jane': 'Noun'}
 
 start = time()
-sol = pos_tagging(R, S, T, E)
+sol = pos_tag(R, S, T, E)
 end = time()-start
 
 if sol != out:

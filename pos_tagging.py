@@ -43,6 +43,99 @@ def pos_tagging(R, S, T, E):
     #return the dictionary that contains the roles that maximize the probability of the sequence of words in S given the roles in R
     return max_prob
 
+def pos_tag(possible_tags, sentence, transitions, emissions):
+  # Initialize the matrices
+  V = [{}]
+  path = {}
 
-#call the function pos_tagging with the following parameters
-pos_tagging(('Start', 'Noun', 'Verb', 'End'), ('the', 'dog', 'barks'), {'Start': {'Noun': 0.5, 'Verb': 0.5}, 'Noun': {'Noun': 0.1, 'Verb': 0.9, 'End': 0.0}, 'Verb': {'Noun': 0.0, 'Verb': 0.0, 'End': 1.0}, 'End': {}}, {'the': {'Noun': 1.0}, 'dog': {'Noun': 1.0}, 'barks': {'Verb': 1.0}})
+  # Initialize the base cases
+  for tag in possible_tags:
+    print("tag: ", tag)
+    print("transitions[Start][tag]: ", transitions["Start"].get(tag))
+    V[0][tag] = transitions["Start"].get(tag) * emissions[sentence[0]].get(tag)
+    print("V[0][tag]: ", V[0][tag])
+    path[tag] = [tag]
+
+  # Run the dynamic programming algorithm
+  for t in range(1, len(sentence)):
+    V.append({})
+    new_path = {}
+
+    for tag in possible_tags:
+      (prob, state) = max([(V[t-1][prev_tag] * transitions[prev_tag].get(tag) * emissions[sentence[t]].get(tag), prev_tag) for prev_tag in possible_tags])
+      V[t][tag] = prob
+      new_path[tag] = path[state] + [tag]
+
+    # Don't need to remember the old paths
+    path = new_path
+
+  # Find the most probable sequence backwards
+  (prob, state) = max([(V[len(sentence) - 1][tag], tag) for tag in possible_tags])
+  res = path[state]
+  #make a dictionary that contains the words in S as keys and the roles in res as values
+  d = dict(zip(sentence, res))
+  return d
+
+
+
+
+def pos_tag2(sentence, possible_tags, transitions, emissions):
+  # Add a special start tag to the list of possible tags
+  possible_tags = ["start"] + possible_tags
+
+  # Initialize the matrices
+  V = [{}]
+  path = {}
+
+  # Initialize the base cases
+  for tag in possible_tags:
+    V[0][tag] = transitions["start"][tag] * emissions[tag][sentence[0]]
+    path[tag] = [tag]
+
+  # Run the dynamic programming algorithm
+  for t in range(1, len(sentence)):
+    V.append({})
+    new_path = {}
+
+    for tag in possible_tags:
+      (prob, state) = max([(V[t-1][prev_tag] * transitions[prev_tag][tag] * emissions[tag][sentence[t]], prev_tag) for prev_tag in possible_tags])
+      V[t][tag] = prob
+      new_path[tag] = path[state] + [tag]
+
+    # Don't need to remember the old paths
+    path = new_path
+
+  # Find the most probable sequence backwards
+  (prob, state) = max([(V[len(sentence) - 1][tag], tag) for tag in possible_tags])
+  return path[state]
+
+
+def pos_tag3(possible_tags, sentence, transitions, emissions):
+  # Initialize the matrices
+  V = [{}]
+  path = {}
+
+  # Initialize the base cases
+  for tag in possible_tags:
+    V[0][tag] = transitions["Start"][tag] * emissions[tag][sentence[0]]
+    path[tag] = [tag]
+
+  # Run the dynamic programming algorithm
+  for t in range(1, len(sentence)):
+    V.append({})
+    new_path = {}
+
+    for tag in possible_tags:
+      (prob, state) = max([(V[t-1][prev_tag] * transitions[prev_tag][tag] * emissions[tag][sentence[t]], prev_tag) for prev_tag in possible_tags])
+      V[t][tag] = prob
+      new_path[tag] = path[state] + [tag]
+
+    # Don't need to remember the old paths
+    path = new_path
+
+  # Find the most probable sequence backwards
+  (prob, state) = max([(V[len(sentence) - 1][tag], tag) for tag in possible_tags])
+  return path[state] + ["end"]
+
+
+#call the function pos_tagging with the following paramete
